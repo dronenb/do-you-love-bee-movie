@@ -3,8 +3,8 @@ use strict;
 use warnings;
 use Data::Dumper;
 open(my $fh, "<", "beemovie.txt") or die $!;
-my @words;
 sleep(5);
+my @words;
 while (my $line = <$fh>){
     chomp($line);
     if ($line && !($line eq '-')){
@@ -14,13 +14,17 @@ while (my $line = <$fh>){
                 $word =~ s/'//g;
                 $word =~ s/"//g;
                 $word =~ s/\\//g;
-                print("Sending word: $word\n");
-                my $cmd = qq{osascript -e 'tell application "System Events" to keystroke "$word"'};
-                system($cmd);
-                sleep(1);
-                system(q{osascript -e 'tell application "System Events" to key code 76'});
-                sleep(1);
+                push(@words, $word);
             }
         }
     }
+}
+foreach my $index (0..$#words){
+    my $word = $words[$index];
+    print("Sending word: $word [".($index + 1)."/".($#words + 1)."]\n");
+    my $cmd = qq{osascript -e 'tell application "System Events" to keystroke "$word"'};
+    system($cmd);
+    sleep(1);
+    system(q{osascript -e 'tell application "System Events" to key code 76'});
+    sleep(1);
 }
